@@ -220,24 +220,24 @@ const CustomerDetails = () => {
                       </button>
                     </li>
 
-                    {/* Subscriptions */}
+                    {/* Wallet */}
                     <li className="nav-item" role="presentation">
                       <button
                         onClick={() => {
-                          tabClickHandler("subscriptions");
+                          tabClickHandler("wallet");
                         }}
                         className={`nav-link ${
-                          activeTab == "subscriptions" ? "active" : null
+                          activeTab == "wallet" ? "active" : null
                         }`}
-                        id="subscriptions-tab"
+                        id="wallet-tab"
                         data-toggle="tab"
-                        data-target="#subscriptions"
+                        data-target="#wallet"
                         type="button"
                         role="tab"
-                        aria-controls="subscriptions"
+                        aria-controls="wallet"
                         aria-selected="false"
                       >
-                        Subscriptions
+                        Wallet
                       </button>
                     </li>
 
@@ -327,8 +327,9 @@ const CustomerDetails = () => {
                                     style={{
                                       height: "100px",
                                       width: "100px",
+                                      borderRadius: "50px",
                                     }}
-                                    src="https://bnpull-1195f.kxcdn.com/pub/media/magefan_blog/default-user3.png"
+                                    src="/assets/images/user-placeholder.png"
                                     alt=""
                                   />
                                 </div>
@@ -373,70 +374,16 @@ const CustomerDetails = () => {
                         </div>
 
                         <div className="col-md-12">
-                          {/* Shipping Address */}
+                          {/* Address */}
                           <div className="card shadow-none border-0">
                             <div className="card-body">
-                              <div className="d-flex justify-content-between">
-                                <div className="">
-                                  <h5 className="">Shipping Address</h5>
-                                </div>
-                                <button
-                                  className="btn btn-info mdi mdi-eye"
-                                  type="button"
-                                  data-toggle="collapse"
-                                  data-target="#shippingAddressDetails"
-                                  aria-expanded="false"
-                                  aria-controls="shippingAddressDetails"
-                                >
-                                  {" Show Address"}
-                                </button>
-                              </div>
-                              <div
-                                className="collapse table-responsive"
-                                id="shippingAddressDetails"
-                              >
-                                <table className="table table-striped">
-                                  <thead>
-                                    <tr>
-                                      <th>#</th>
-                                      <th>Name</th>
-                                      <th>Email</th>
-                                      <th>Mobile</th>
-                                      <th>Alt Mobile</th>
-                                      <th>Address</th>
-                                      <th>City</th>
-                                      <th>Pincode</th>
-                                      <th>Area</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {user?.shippingAddresses?.length ? (
-                                      user?.shippingAddresses?.map(
-                                        (address, index) => {
-                                          return (
-                                            <tr key={address._id}>
-                                              <td>#{++index}</td>
-                                              <td>{address.name}</td>
-                                              <td>{address.email}</td>
-                                              <td>{address.mobile}</td>
-                                              <td>{address.altMobile}</td>
-                                              <td>{address.address}</td>
-                                              <td>{address.city}</td>
-                                              <td>
-                                                {address?.pincode?.pincode}
-                                              </td>
-                                              <td>{address?.area?.name}</td>
-                                            </tr>
-                                          );
-                                        }
-                                      )
-                                    ) : (
-                                      <div className="alert alert-danger h6">
-                                        Address Not Available
-                                      </div>
-                                    )}
-                                  </tbody>
-                                </table>
+                              <h5 className="">Address</h5>
+                              <div className="ml-2">
+                                <p>Address : {user.address}</p>
+                                <p>Country : {user.country}</p>
+                                <p>State : {user.state}</p>
+                                <p>City : {user.city}</p>
+                                <p>Pincode : {user.pincode}</p>
                               </div>
                             </div>
                           </div>
@@ -444,107 +391,23 @@ const CustomerDetails = () => {
                       </div>
                     </div>
 
-                    {/* Subscriptions */}
+                    {/* Wallet */}
                     <div
                       className={`tab-pane fade show ${
-                        activeTab == "subscriptions" ? "active" : null
+                        activeTab == "wallet" ? "active" : null
                       }`}
-                      id="subscriptions"
+                      id="wallet"
                       role="tabpanel"
-                      aria-labelledby="subscriptions-tab"
+                      aria-labelledby="wallet-tab"
                     >
                       <div className="row">
                         <div className="col-md-12 table-responsive">
-                          {/* Subscription Details */}
-                          <div className="card shadow-sm border-0 mt-3">
-                            {subscriptionLoading ? (
-                              <div className={"bg-white p-3 text-center"}>
-                                <Spinner />
-                              </div>
-                            ) : (
-                              <div class="card-body">
-                                {subscriptions.length ? (
-                                  <div class="table-responsive">
-                                    <table class="table bg-white">
-                                      <thead>
-                                        <tr>
-                                          <th>#ID</th>
-                                          <th>Bucket</th>
-                                          <th>Purchased Date</th>
-                                          <th>Start Date</th>
-                                          <th>Expiry Date</th>
-                                          <th>Status</th>
-                                          <th>Amount</th>
-                                          <th>Actions</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {subscriptions.map((data, index) => {
-                                          return (
-                                            <tr key={index}>
-                                              <td> # {++index} </td>
-                                              <td>
-                                                <Link
-                                                  to={`/admin/bucket/details/${data?.bucketDetails?.bucket?._id}`}
-                                                >
-                                                  {
-                                                    data?.bucketDetails
-                                                      ?.bucketName
-                                                  }
-                                                </Link>
-                                              </td>
-                                              <td>
-                                                {date.format(
-                                                  new Date(data.createdAt),
-                                                  "DD-MM-YYYY"
-                                                )}
-                                              </td>
-                                              <td>
-                                                {date.format(
-                                                  new Date(
-                                                    data.subscriptionStartDate
-                                                  ),
-                                                  "DD-MM-YYYY"
-                                                )}
-                                              </td>
-                                              <td>
-                                                {date.format(
-                                                  new Date(
-                                                    data.subscriptionExpiryDate
-                                                  ),
-                                                  "DD-MM-YYYY"
-                                                )}
-                                              </td>
-                                              <td>
-                                                <span class="text-info">
-                                                  {data.subscriptionStatus}
-                                                </span>
-                                              </td>
-                                              <td>
-                                                <i class="fa fa-inr"></i>
-                                                {data?.totalAmount}
-                                              </td>
-                                              <td>
-                                                <Link
-                                                  class="btn btn-info"
-                                                  to={`/admin/subscription/details/${data._id}`}
-                                                >
-                                                  View
-                                                </Link>
-                                              </td>
-                                            </tr>
-                                          );
-                                        })}
-                                      </tbody>
-                                    </table>
-                                  </div>
-                                ) : (
-                                  <div className="alert alert-danger h6">
-                                    Subscription Not Available.
-                                  </div>
-                                )}
-                              </div>
-                            )}
+                          {/* Wallet Details */}
+                          <div className="card shadow-none border-0 mt-3">
+                            <h5>
+                              Amount : <i className="fa fa-inr"></i>
+                              {user.wallet}
+                            </h5>
                           </div>
                         </div>
                       </div>

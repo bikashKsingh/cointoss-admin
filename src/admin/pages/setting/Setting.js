@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import M from "materialize-css";
 import Config from "../../../config/Config";
-import { Link } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb";
 
 const Setting = () => {
@@ -15,24 +14,12 @@ const Setting = () => {
     setIsUpdateLoaded(false);
     evt.preventDefault();
 
-    delete setting.contactUs;
-
-    const updateData = {
-      cashback: setting.cashback || undefined,
-      maximumCashbackAmount: setting.maximumCashbackAmount || undefined,
-      minimumOrderAmount: setting.minimumOrderAmount || undefined,
-      cashbackStatus: setting.cashbackStatus || false,
-      contactUs: { ...contactUs },
-    };
-
-    console.log(updateData);
-
-    fetch(`${Config.SERVER_URL}/setting`, {
-      method: "PUT",
-      body: JSON.stringify(updateData),
+    fetch(`${Config.SERVER_URL}/settings`, {
+      method: "POST",
+      body: JSON.stringify(setting),
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("jwt_branch_token")}`,
+        Authorization: `Bearer ${localStorage.getItem("jwt_admin_token")}`,
       },
     })
       .then((res) => res.json())
@@ -41,9 +28,9 @@ const Setting = () => {
           if (result.status === 200) {
             M.toast({ html: result.message, classes: "bg-success" });
           } else {
-            const errorKeys = Object.keys(result.error);
+            const errorKeys = Object.keys(result.errors);
             errorKeys.forEach((key) => {
-              M.toast({ html: result.error[key], classes: "bg-danger" });
+              M.toast({ html: result.errors[key], classes: "bg-danger" });
             });
             M.toast({ html: result.message, classes: "bg-danger" });
           }
@@ -58,17 +45,22 @@ const Setting = () => {
 
   // get Records
   useEffect(() => {
-    fetch(`${Config.SERVER_URL}/setting/`, {
+    fetch(`${Config.SERVER_URL}/settings/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("jwt_branch_token")}`,
+        Authorization: `Bearer ${localStorage.getItem("jwt_admin_token")}`,
       },
     })
       .then((res) => res.json())
       .then(
         (result) => {
           if (result.status === 200) {
+            let body = result.body;
+            delete body.id;
+            delete body._id;
+            delete body.createdAt;
+            delete body.updatedAt;
             setSetting(result.body);
             setContactUs(result.body.contactUs || {});
           } else {
@@ -100,99 +92,79 @@ const Setting = () => {
               onSubmit={submitHandler}
               className="form-horizontal form-material"
             >
-              {/* Order Details */}
+              {/* Withdrawal */}
               <div className={"row shadow-sm bg-white py-3"}>
                 <div className="col-md-12">
-                  <h3 className={"my-3 text-info"}>Order Details</h3>
+                  <h3 className={"my-3 text-info"}>Withdrawal Details</h3>
                 </div>
 
-                {/*  Minimum Order Amount */}
-                <div className={"form-group col-md-6"}>
+                {/*  Minimum Withdrawal Amount */}
+                <div className={"form-group col-md-12"}>
                   <label htmlFor="" className="text-dark h6 active">
-                    Minimum Order Amount
+                    Minimum Withdrawal Amount
                   </label>
                   <input
                     type="text"
-                    value={setting.minimumOrderAmount}
+                    value={setting.minimumwithdrawalAmount}
                     onChange={(evt) =>
                       setSetting({
                         ...setting,
-                        minimumOrderAmount: evt.target.value,
+                        minimumwithdrawalAmount: evt.target.value,
                       })
                     }
                     className="form-control"
-                    placeholder={"Standard Delivery"}
+                    placeholder={"Enter withdrawal amount"}
                   />
                 </div>
               </div>
 
-              {/* Cashback Details */}
+              {/* Referral Details */}
               <div className={"row shadow-sm bg-white py-3 mt-2"}>
                 <div className="col-md-12">
-                  <h3 className={"my-3 text-info"}>Cashback Details</h3>
+                  <h3 className={"my-3 text-info"}>Referral Details</h3>
                 </div>
 
-                <div className="form-group col-md-12">
+                {/* Referral Amount */}
+                <div className="form-group col-md-6">
                   <div className="form-check m-0 p-0">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      checked={setting.cashbackStatus}
-                      onChange={(evt) => {
-                        setSetting({
-                          ...setting,
-                          cashbackStatus: evt.target.checked,
-                        });
-                      }}
-                      id="useWallet"
-                    />
-                    <label className="form-check-label" for="useWallet">
-                      Cashback Status
-                    </label>
-                  </div>
-                </div>
-
-                {/* Maximum Cashback Amount */}
-                {setting.cashbackStatus && (
-                  <div className={"form-group col-md-6"}>
                     <label htmlFor="" className="text-dark h6 active">
-                      Maximum Cashback Amount
+                      Referral Amount
                     </label>
                     <input
                       type="text"
-                      value={setting.maximumCashbackAmount}
+                      value={setting.referralAmount}
                       onChange={(evt) =>
                         setSetting({
                           ...setting,
-                          maximumCashbackAmount: evt.target.value,
+                          referralAmount: evt.target.value,
                         })
                       }
                       className="form-control"
-                      placeholder={"Ex: 100"}
+                      placeholder={"Enter referral amount"}
                     />
                   </div>
-                )}
+                </div>
 
-                {/* Amount */}
-                {setting.cashbackStatus && (
-                  <div className={"form-group col-md-6"}>
+                {/* Referred Amount */}
+                <div className="form-group col-md-6">
+                  <div className="form-check m-0 p-0">
                     <label htmlFor="" className="text-dark h6 active">
-                      Cashback Percentage
+                      Referred Amount
                     </label>
                     <input
-                      type="number"
-                      value={setting.cashback}
+                      type="text"
+                      value={setting.referredAmount}
                       onChange={(evt) =>
                         setSetting({
                           ...setting,
-                          cashback: evt.target.value,
+                          referredAmount: evt.target.value,
                         })
                       }
                       className="form-control"
-                      placeholder={2}
+                      placeholder={"Enter referred amount"}
                     />
                   </div>
-                )}
+                </div>
               </div>
 
               {/* Contact Details */}
@@ -201,138 +173,162 @@ const Setting = () => {
                   <h3 className={"my-3 text-info"}>Contact Details</h3>
                 </div>
 
-                {/* Mobile Number */}
+                {/* Support Mobile */}
                 <div className={"form-group col-md-6"}>
                   <label htmlFor="" className="text-dark h6 active">
-                    Mobile Number
+                    Support Mobile
                   </label>
                   <input
                     type="text"
-                    value={contactUs.mobile}
+                    value={setting.supportMobile}
                     onChange={(evt) =>
-                      setContactUs({
-                        ...contactUs,
-                        mobile: evt.target.value,
+                      setSetting({
+                        ...setting,
+                        supportMobile: evt.target.value,
                       })
                     }
                     className="form-control"
-                    placeholder={"9117162463"}
+                    placeholder={"Enter mobile number"}
                   />
                 </div>
 
-                {/* Whatsapp Number */}
+                {/* Support Email */}
                 <div className={"form-group col-md-6"}>
                   <label htmlFor="" className="text-dark h6 active">
-                    Whatsapp Number
+                    Support Email
+                  </label>
+                  <input
+                    type="email"
+                    value={setting.supportEmail}
+                    onChange={(evt) =>
+                      setSetting({
+                        ...setting,
+                        supportEmail: evt.target.value,
+                      })
+                    }
+                    className="form-control"
+                    placeholder={"Enter email id"}
+                  />
+                </div>
+
+                {/* Support Whatsapp Number */}
+                <div className={"form-group col-md-6"}>
+                  <label htmlFor="" className="text-dark h6 active">
+                    Support Whatsapp Number
                   </label>
                   <input
                     type="tel"
-                    value={contactUs.whatsappNumber}
+                    value={setting.supportWhatsapp}
                     onChange={(evt) =>
-                      setContactUs({
-                        ...contactUs,
-                        whatsappNumber: evt.target.value,
+                      setSetting({
+                        ...setting,
+                        supportWhatsapp: evt.target.value,
                       })
                     }
                     className="form-control"
-                    placeholder={"9117162463"}
+                    placeholder={"Enter whatsapp number"}
                   />
                 </div>
 
-                {/* Customer Support Number */}
-                <div className={"form-group col-md-6"}>
+                {/* Office Address */}
+                <div className={"form-group col-md-12"}>
                   <label htmlFor="" className="text-dark h6 active">
-                    Customer Support Number
+                    Office Address
                   </label>
                   <input
                     type="text"
-                    value={contactUs.customerSupportNumber}
+                    value={contactUs.officeAddress}
                     onChange={(evt) =>
                       setContactUs({
                         ...contactUs,
-                        customerSupportNumber: evt.target.value,
-                      })
-                    }
-                    className="form-control"
-                    placeholder={"1800123123"}
-                  />
-                </div>
-
-                {/* Email Address */}
-                <div className={"form-group col-md-6"}>
-                  <label htmlFor="" className="text-dark h6 active">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    value={contactUs.email}
-                    onChange={(evt) =>
-                      setContactUs({
-                        ...contactUs,
-                        email: evt.target.value,
-                      })
-                    }
-                    className="form-control"
-                    placeholder={"info@cake.com"}
-                  />
-                </div>
-
-                {/* Customer Support Email */}
-                <div className={"form-group col-md-6"}>
-                  <label htmlFor="" className="text-dark h6 active">
-                    Customer Support Email
-                  </label>
-                  <input
-                    type="email"
-                    value={contactUs.customerSupportEmail}
-                    onChange={(evt) =>
-                      setContactUs({
-                        ...contactUs,
-                        customerSupportEmail: evt.target.value,
-                      })
-                    }
-                    className="form-control"
-                    placeholder={"info@cake.com"}
-                  />
-                </div>
-
-                {/* Address */}
-                <div className={"form-group col-md-6"}>
-                  <label htmlFor="" className="text-dark h6 active">
-                    Address
-                  </label>
-                  <input
-                    type="text"
-                    value={contactUs.address}
-                    onChange={(evt) =>
-                      setContactUs({
-                        ...contactUs,
-                        address: evt.target.value,
+                        officeAddress: evt.target.value,
                       })
                     }
                     className="form-control"
                     placeholder={"Write Address"}
                   />
                 </div>
+              </div>
 
-                {/* Google Map Url */}
-                <div className={"form-group col-md-12"}>
+              {/* Social Media Details */}
+              <div className={"row shadow-sm bg-white py-3 mt-2"}>
+                <div className="col-md-12">
+                  <h3 className={"my-3 text-info"}>Social Media Details</h3>
+                </div>
+
+                {/* Facebook */}
+                <div className={"form-group col-md-6"}>
                   <label htmlFor="" className="text-dark h6 active">
-                    Google Map Url
+                    Facebook
                   </label>
                   <input
-                    type="url"
-                    value={contactUs.googleMapUrl}
+                    type="text"
+                    value={setting.facebook}
                     onChange={(evt) =>
-                      setContactUs({
-                        ...contactUs,
-                        googleMapUrl: evt.target.value,
+                      setSetting({
+                        ...setting,
+                        facebook: evt.target.value,
                       })
                     }
                     className="form-control"
-                    placeholder={
-                      "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3683.480299686449!2d88.4079383!3d22.598532799999997!3m2!1i1024!2i768!4f13.1!4m3!3e6!4m0!4m0!5e0!3m2!1sen!2sin!4v1663319853505!5m2!1sen!2sin"
+                    placeholder={"Enter facebook profile"}
+                  />
+                </div>
+
+                {/* Twitter */}
+                <div className={"form-group col-md-6"}>
+                  <label htmlFor="" className="text-dark h6 active">
+                    Twitter
+                  </label>
+                  <input
+                    type="text"
+                    value={setting.twitter}
+                    onChange={(evt) =>
+                      setSetting({
+                        ...setting,
+                        twitter: evt.target.value,
+                      })
                     }
+                    className="form-control"
+                    placeholder={"Enter twitter profile"}
+                  />
+                </div>
+
+                {/* Instagram */}
+                <div className={"form-group col-md-6"}>
+                  <label htmlFor="" className="text-dark h6 active">
+                    Instagram
+                  </label>
+                  <input
+                    type="text"
+                    value={setting.instagram}
+                    onChange={(evt) =>
+                      setSetting({
+                        ...setting,
+                        instagram: evt.target.value,
+                      })
+                    }
+                    className="form-control"
+                    placeholder={"Enter instagram profile"}
+                  />
+                </div>
+
+                {/* Youtube */}
+                <div className={"form-group col-md-6"}>
+                  <label htmlFor="" className="text-dark h6 active">
+                    Youtube
+                  </label>
+                  <input
+                    type="text"
+                    value={setting.youtube}
+                    onChange={(evt) =>
+                      setSetting({
+                        ...setting,
+                        youtube: evt.target.value,
+                      })
+                    }
+                    className="form-control"
+                    placeholder={"Enter youtube profile"}
                   />
                 </div>
 

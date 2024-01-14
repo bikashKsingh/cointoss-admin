@@ -216,7 +216,7 @@ const CustomerList = (props) => {
     <div className="page-wrapper px-0 pt-0">
       <div className={"container-fluid"}>
         {/* Bread crumb and right sidebar toggle */}
-        <Breadcrumb title={"CUSTOMER LISTS"} pageTitle={"Customer List"} />
+        <Breadcrumb title={"USER LIST"} pageTitle={"User List"} />
         {/* End Bread crumb and right sidebar toggle */}
 
         <div

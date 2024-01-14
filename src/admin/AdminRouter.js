@@ -17,6 +17,9 @@ import { initialState, adminReducer } from "../reducer/AdminReducer";
 // ================   Admin  =====================
 import Profile from "./pages/Profile";
 
+// ================   Settings  =====================
+import Setting from "./pages/setting/Setting";
+
 // ================   Reviews  =====================
 import ReviewList from "./pages/reviews/ReviewList";
 import EditReview from "./pages/reviews/EditReview";
@@ -105,6 +108,9 @@ const Routing = () => {
         component={EditCouponFromCSV}
       />
       <Route exact path="/admin/coupon/edit/:id" component={EditCoupon} />
+
+      {/* Settings */}
+      <Route exact path="/admin/setting" component={Setting} />
 
       {/* Testimonials */}
       <Route exact path="/admin/testimonials" component={TestimonialList} />
